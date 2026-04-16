@@ -1,0 +1,48 @@
+package com.itheima.controller;
+
+import com.itheima.pojo.Category;
+import com.itheima.pojo.Result;
+import com.itheima.service.CategoryService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/category")
+public class CategoryController {
+    @Autowired
+    private CategoryService categoryService;
+    @PostMapping
+    public Result add(@RequestBody @Validated(Category.Add.class) Category category){
+        categoryService.add(category);
+        return Result.success();
+    }
+    @GetMapping
+    public Result<List< Category>> list(){
+        List<Category> li = categoryService.list();
+        return Result.success(li);
+    }
+    @GetMapping("/detail")
+    public Result<Category> datail(Integer id){
+      Category category =  categoryService.findById(id);
+      return Result.success(category);
+    }
+    @PutMapping
+    public Result update(@RequestBody @Validated(Category.Update.class) Category category){
+        categoryService.update(category);
+        return Result.success();
+    }
+    //删除
+    @DeleteMapping
+    public Result delete(Integer id){
+        //检验该id的分类下是
+        if(categoryService.findById(id)==null){
+            return Result.errors("该分类不存在");
+        }else {
+            categoryService.delete(id);
+            return Result.success();}
+
+    }
+}
